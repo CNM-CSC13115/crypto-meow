@@ -70,7 +70,7 @@ The project has 2 part:
 1. Copy the `MeowContract` and `MeowMarketPlace` contract deployed addresses into `/src/components/js/service.js` into the `static chainIdToAddress` variable with ID `0x539` (this is the chain ID for Ganache)
 2. Run the app with `npm start` and open a browser to `http://localhost:3000`
 3. Use the account that ganache provided
-
+https://user-images.githubusercontent.com/63916162/261995333-dd1b019d-f940-4b5f-8eeb-1a864d4da113.png
 - Download [The crypto wallet for Defi, Web3 Dapps and NFTs | MetaMask](https://metamask.io/) extension for your browser. Add Network > Fill in like the image
 
 - Log in to one of accounts above
