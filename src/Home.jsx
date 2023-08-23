@@ -1,20 +1,13 @@
 import React from "react";
 import styled from "styled-components";
-import { Alert, Button, Col, Row } from "react-bootstrap";
+import { Alert, Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
 import Cat from "./components/cat/Cat";
 import { CatModel } from "./components/js/catFactory";
 import { connect } from "./components/wallet/walletSaga";
 import GenZeroCounter from "./components/cat/GenZeroCounter";
-
-const Featured = styled(Row)`
-  max-width: 40rem;
-`;
-
-const Div = styled(Col)`
-  transform: scale(0.75);
-`;
+import { Button } from "antd";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -31,28 +24,32 @@ export default function Home() {
   const featuredCats = featured.map((genes) => {
     const cat = new CatModel({ genes });
     return (
-      <Div key={genes}>
+      <div key={genes} className="bg-pink-200 p-10 rounded-3xl shadow-sm">
         <Cat model={cat} />
-      </Div>
+      </div>
     );
   });
 
   return (
-    <div className="d-flex flex-column align-items-center">
-      <div align="center" className="mt-2">
-        <h1>Crypto Kitties</h1>
-        <p>
+    <div className="d-flex flex-column align-items-center justify-center min-h-[calc(100vh-200px)] bg-pink-100 py-5">
+      <div align="center" className="mt-2 text-3xl text-pink-500 font-medium">
+        <h1 className="font-bold mb-2">Crypto Kitties</h1>
+        <p className="text-xl">
           Collect and breed furrever friends!
           <br />
           <GenZeroCounter msg="geneneration zero Kittes already created. Get yours before they're all gone!" />
         </p>
       </div>
       {!wallet.isConnected && wallet.web3ProviderAvailable ? (
-        <h3>
-          <Button size="lg" onClick={() => dispatch(connect())}>
-            Connect to get started
-          </Button>
-        </h3>
+        <Button
+          onClick={() => dispatch(connect())}
+          className="mt-3"
+          type="primary"
+          size="large"
+          danger
+        >
+          Connect to get started
+        </Button>
       ) : null}
       {!wallet.web3ProviderAvailable ? (
         <Alert variant="danger">
@@ -67,7 +64,17 @@ export default function Home() {
           to get started.
         </Alert>
       ) : null}
-      <Featured>{featuredCats}</Featured>
+
+      <div className="horizontal-container my-5 px-5">
+        <div className="horizontal-scrolling-items">
+          <div className="horizontal-scrolling-items__item flex gap-5">
+            {featuredCats}
+          </div>
+          <div className="horizontal-scrolling-items__item flex gap-5 ml-[20px]">
+            {featuredCats}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
