@@ -25,7 +25,12 @@ function useCurrentKitty(kittyId) {
   };
 }
 
-export default function BreedList({ kittyId, disabled: rawDisabled, onClick }) {
+export default function BreedList({
+  listType,
+  kittyId,
+  disabled: rawDisabled,
+  onClick,
+}) {
   const model = useCurrentKitty(kittyId);
 
   // const isSireList = useCallback(

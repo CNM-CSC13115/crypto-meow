@@ -24,6 +24,7 @@ const PlaceHolder = styled.div`
 `;
 
 const BreedModal = ({ type, open, onClose, onOk }) => {
+  const [listType, setListType] = useState(BreedListType.user);
   // from a market sire offer
   // should lock the dad selection
   // breed button should buy the offer
@@ -44,7 +45,6 @@ const BreedModal = ({ type, open, onClose, onOk }) => {
     selectSireOfferForBreeding(state, wallet.account)
   );
 
-  const [listType, setListType] = useState(BreedListType.user);
   const [model, setModel] = useState(null);
 
   const list = useMemo(() => {
@@ -123,13 +123,14 @@ const BreedModal = ({ type, open, onClose, onOk }) => {
           Set {type}
         </Button>
       </ButtonGroup>
-      <div className="grid grid-cols-3 gap-y-4">
+      <div className="grid grid-cols-3 gap-y-4 min-h-[400px]">
         {list.map((item) => (
           <BreedList
             key={item.kittyId}
             kittyId={item.kittyId}
             disabled={item.kittyId == dadId || item.kittyId == mumId}
             onClick={setModel}
+            listType={listType}
           />
         ))}
       </div>
