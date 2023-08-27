@@ -1,18 +1,18 @@
-import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
+import { Row } from "react-bootstrap";
 
-import { Modal } from "antd";
+import CatAction from "./CatAction";
 import { offerTypes } from "../js/kittyConstants";
-import ApproveMarket from "../market/ApproveMarket";
-import { buyOffer, cancelOffer } from "../market/offerSaga";
 import {
   selectOfferByKittyId,
   sellKitty,
   sireKitty,
 } from "../market/offerSlice";
+import { buyOffer, cancelOffer } from "../market/offerSaga";
 import { selectIsApproved } from "../wallet/walletSlice";
-import CatAction from "./CatAction";
+import ApproveMarket from "../market/ApproveMarket";
 import { Button } from "antd";
 
 export default function CatActions({ kittyId, isBuyMode }) {
@@ -66,49 +66,44 @@ export default function CatActions({ kittyId, isBuyMode }) {
   const handleBuySireOfferClicked = async () => Promise.resolve(true);
 
   let action;
+  if (askForApproval) {
+    action = <ApproveMarket handleApproveCancel={handleApproveCancel} />;
+  } else {
+    switch (offerType) {
+      case offerTypes.sell:
+        action = (
+          <CatAction
+            offer={offer}
+            btnText="Sell"
+            btnTextPlural="Selling"
+            isBuyMode={isBuyMode}
+            kittyId={kittyId}
+            handleBackClicked={handleBackClicked}
+            handleCreateOfferClicked={createSaleOffer}
+            handleBuyOfferClicked={handleBuyKittyClicked}
+            handleCancelOffer={handleCancelOffer}
+          />
+        );
+        break;
 
-  switch (offerType) {
-    case offerTypes.sell:
-      action = (
-        <CatAction
-          offer={offer}
-          btnText="Sell"
-          btnTextPlural="Selling"
-          isBuyMode={isBuyMode}
-          kittyId={kittyId}
-          handleBackClicked={handleBackClicked}
-          handleCreateOfferClicked={createSaleOffer}
-          handleBuyOfferClicked={handleBuyKittyClicked}
-          handleCancelOffer={handleCancelOffer}
-        />
-      );
-      break;
+      case offerTypes.sire:
+        action = (
+          <CatAction
+            offer={offer}
+            btnText="Sire"
+            btnTextPlural="Siring"
+            isBuyMode={isBuyMode}
+            kittyId={kittyId}
+            handleBackClicked={handleBackClicked}
+            handleCreateOfferClicked={createSireOffer}
+            handleBuyOfferClicked={handleBuySireOfferClicked}
+            handleCancelOffer={handleCancelOffer}
+          />
+        );
+        break;
 
-    case offerTypes.sire:
-      action = (
-        <CatAction
-          offer={offer}
-          btnText="Sire"
-          btnTextPlural="Siring"
-          isBuyMode={isBuyMode}
-          kittyId={kittyId}
-          handleBackClicked={handleBackClicked}
-          handleCreateOfferClicked={createSireOffer}
-          handleBuyOfferClicked={handleBuySireOfferClicked}
-          handleCancelOffer={handleCancelOffer}
-        />
-      );
-      break;
-
-    default:
-      break;
-  }
-
-  return (
-    <div>
-      {action}
-      <div className="flex gap-2">
-        {Object.keys(offerTypes).map((keyName) => (
+      default:
+        action = Object.keys(offerTypes).map((keyName) => (
           <Button
             key={keyName}
             className="flex-1 bg-[#fd9bb3] hover:bg-red-400 text-white font-medium hover:border-none"
@@ -117,25 +112,12 @@ export default function CatActions({ kittyId, isBuyMode }) {
           >
             {offerTypes[keyName]}
           </Button>
-        ))}
-      </div>
-      {askForApproval ? (
-        <Modal open footer={null}>
-          <ApproveMarket handleApproveCancel={handleApproveCancel} />
-        </Modal>
-      ) : (
-        offerType && (
-          <Modal
-            open
-            title={offerType === offerTypes.sell ? "Sell" : "Sire"}
-            footer={null}
-          >
-            {action}
-          </Modal>
-        )
-      )}
-    </div>
-  );
+        ));
+        break;
+    }
+  }
+
+  return <Row className="pl-4">{action}</Row>;
 }
 
 CatActions.propTypes = {

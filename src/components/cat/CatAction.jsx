@@ -78,9 +78,9 @@ export default function CatAction(props) {
         <Form
           inline
           onSubmit={onCreateOfferClicked}
-          className="flex items-center"
+          className="flex items-center w-full gap-2"
         >
-          <InputGroup>
+          <div className="flex items-center w-full">
             <Form.Control
               style={{ width: "100%" }}
               name="price"
@@ -90,14 +90,14 @@ export default function CatAction(props) {
               onChange={onPriceChange}
               placeholer="Set Price"
             />
-          </InputGroup>
-          <InputGroup.Append className="flex items-center gap-2">
             <InputGroup.Text>ETH</InputGroup.Text>
+          </div>
+          <InputGroup.Append className="flex items-center gap-2">
             <Button htmlType="submit" type="primary" danger>
               {btnText}
               Kitty
             </Button>
-            <Button variant="secondary" onClick={handleBackClicked}>
+            <Button type="text" onClick={handleBackClicked}>
               Back
             </Button>
           </InputGroup.Append>
