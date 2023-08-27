@@ -13,8 +13,8 @@ export default class Service {
     },
     "0x539": {
       // Ganache Local
-      kitty: "0x950FE8528a8ff2F058F4eaF06f94c8cB76b533fD",
-      market: "0x7d4CBb768bcbdACF0e685115743bEd94A57A2542",
+      kitty: "0xAcF06Ec4Dd776D71e946eE9697944eB71b19565E",
+      market: "0x135a9DD50ea5dD1b49B15862718f6d0C39e40c7C",
     },
   };
 

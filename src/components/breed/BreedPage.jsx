@@ -1,34 +1,22 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Row, Col, Button, ButtonGroup
-} from 'react-bootstrap';
-import styled from 'styled-components';
+import React, { useEffect, useMemo, useState } from "react";
 
-import BreedList, { BreedListType } from './BreedList';
-import CatBox from '../cat/CatBox';
-import { CatModel } from '../js/catFactory';
-import Service from '../js/service';
-import { BreedProgress, breedReset } from './breedSlice';
-import { selectKittyById, selectKittyIdsByOwner } from '../cat/catSlice';
-import { selectOfferByKittyId, selectSireOfferIdsForBreeding } from '../market/offerSlice';
-import { approveParent, breed, sire } from './breedSaga';
-import { MediumCatContainer } from '../cat/CatBoxContainers';
-
-const PlaceHolder = styled.div`
-    color: white;
-    border-radius: 5px;
-    height: 10rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
+import { Heart } from "iconsax-react";
+import BreedModal from "./BreedModal";
+import { useDispatch, useSelector } from "react-redux";
+import { selectKittyById } from "../cat/catSlice";
+import { CatModel } from "../js/catFactory";
+import { MediumCatContainer } from "../cat/CatBoxContainers";
+import CatBox from "../cat/CatBox";
+import { breed, sire } from "./breedSaga";
+import { selectOfferByKittyId } from "../market/offerSlice";
+import { BreedProgress, breedReset } from "./breedSlice";
+import { Modal } from "antd";
 
 export default function BreedPage() {
-  // from a market sire offer
-  // should lock the dad selection
-  // breed button should buy the offer
   const dispatch = useDispatch();
+  const [type, setType] = useState("");
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     dadId,
@@ -39,167 +27,179 @@ export default function BreedPage() {
     // error TODO: display errors
   } = useSelector((state) => state.breed);
 
-  const wallet = useSelector((state) => state.wallet);
-  const kittyList = useSelector((state) => selectKittyIdsByOwner(state, wallet.account));
-  const sireList = useSelector((state) => selectSireOfferIdsForBreeding(state, wallet.account));
-
-  const [list, setList] = useState(kittyList);
-  const [listType, setListType] = useState(BreedListType.user);
-
-  useEffect(() => {
-    // update breed list contents when selected list type changes
-    if (listType === BreedListType.user) {
-      setList(kittyList);
-    } else {
-      setList(sireList);
-    }
-  }, [listType, kittyList, sireList]);
-
-  const isSireList = useCallback(
-    () => listType === BreedListType.sire,
-    [listType]
-  );
-
-  const sireOffer = useSelector((state) => selectOfferByKittyId(state, sireOfferId));
   const dadKitty = useSelector((state) => selectKittyById(state, dadId));
-  let dad;
-  if (dadKitty) {
-    dad = new CatModel(dadKitty);
-  }
+  const dad = useMemo(() => {
+    if (dadKitty) {
+      return new CatModel(dadKitty);
+    }
+    return null;
+  }, [dadKitty]);
 
   const mumKitty = useSelector((state) => selectKittyById(state, mumId));
-  let mum;
-  if (mumKitty) {
-    mum = new CatModel(mumKitty);
-  }
+  const mum = useMemo(() => {
+    if (mumKitty) {
+      return new CatModel(mumKitty);
+    }
+    return null;
+  }, [mumKitty]);
+
+  const sireOffer = useSelector((state) =>
+    selectOfferByKittyId(state, sireOfferId)
+  );
 
   const newKitty = useSelector((state) => selectKittyById(state, kittenId));
-  let kitten;
-  if (newKitty) {
-    kitten = new CatModel(newKitty);
-  }
-
-  const handleOnSetParent = (kitty, parentType) => {
-    dispatch(approveParent({ parentId: kitty.cat.kittyId, parentType, }));
-  };
-
-  const onBreedClicked = async () => {
-    if (sireOffer) {
-      dispatch(sire({ offer: sireOffer, matronId: mumId, }));
-    } else {
-      dispatch(breed({ mumId, dadId, }));
+  const kitten = useMemo(() => {
+    if (newKitty) {
+      return new CatModel(newKitty);
     }
-  };
+    return null;
+  }, [newKitty]);
 
   const onResetParents = () => {
     dispatch(breedReset());
   };
 
+  const onBreedClicked = async () => {
+    if (loading) return;
+    setLoading(true);
+    if (sireOffer) {
+      dispatch(sire({ offer: sireOffer, matronId: mumId }));
+    } else {
+      dispatch(breed({ mumId, dadId }));
+    }
+    setOpen(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
+  useEffect(() => {
+    console.log(progress);
+    if (progress === BreedProgress.BIRTH) {
+      setLoading(false);
+    }
+  }, [progress]);
+
   const sireCostTxt = sireOffer
-    ? ` (${Service.web3.utils.fromWei(sireOffer.price, 'ether')} ETH)` : '';
-
-  // Set Parents
-  const parentBoxes = [
-    { type: 'Mum', model: mum, },
-    { type: `Dad${sireCostTxt}`, model: dad, }
-  ].map((data) => (
-    <Col key={data.type}>
-      <h5>{data.type}</h5>
-      {
-        data.model
-          ? (
-            <MediumCatContainer>
-              <CatBox model={data.model} />
-            </MediumCatContainer>
-          )
-          : (
-            <PlaceHolder className="bg-info">
-              <h1>?</h1>
-            </PlaceHolder>
-          )
-      }
-    </Col>
-  ));
-
-  let instructionContent;
-  switch (progress) {
-    case BreedProgress.READY:
-      instructionContent = (
-        <Button
-          className="mt-2"
-          onClick={onBreedClicked}
-        >
-          Give them some privacy
-          {sireCostTxt}
-        </Button>
-      );
-      break;
-
-    case BreedProgress.BIRTH:
-      instructionContent = (
-        <div>
-          <p className="text-success">Cogratulations! Your parent kitties now need a rest.</p>
-          <Button
-            variant="primary"
-            onClick={onResetParents}
-          >
-            Breed Different Kitties
-          </Button>
-        </div>
-      );
-      break;
-
-    case BreedProgress.ERROR_SAME_PARENT:
-      instructionContent = <p className="bg-warning text-white">The mum and dad kitty must be different!</p>;
-      break;
-
-    default:
-      instructionContent = <p>Select a Mum and Dad kitty</p>;
-      break;
-  }
-
-  const kittenBox = kitten
-    ? (
-      <div className="d-flex flex-column align-items-center mt-4 text-success">
-        <h5>A new kitten is born!</h5>
-        <CatBox model={kitten} />
-      </div>
-    )
-    : null;
+    ? ` (${Service.web3.utils.fromWei(sireOffer.price, "ether")} ETH)`
+    : "";
 
   return (
-    <div className="p-2 mt-2">
-      <h1 className="text-center">Breed Your Kitties</h1>
-      <Row>
-        <Col sm={4} className="d-flex flex-column">
-          <h5 className="text-center">Kitties</h5>
-          <ButtonGroup className="p-1">
-            <Button
-              variant={isSireList() ? 'light' : 'primary'}
-              onClick={() => setListType(BreedListType.user)}
-            >
-              My Kitties
-            </Button>
-            <Button
-              variant={isSireList() ? 'primary' : 'light'}
-              onClick={() => setListType(BreedListType.sire)}
-            >
-              Sire Offers
-            </Button>
-          </ButtonGroup>
-          <BreedList
-            handleOnSetParent={handleOnSetParent}
-            kittyIds={list}
-            listType={listType}
-          />
-        </Col>
-        <Col sm={8} className="text-center">
-          <h5>Parents</h5>
-          {instructionContent}
-          {kittenBox}
-          <Row>{parentBoxes}</Row>
-        </Col>
-      </Row>
+    <div>
+      <div className="py-20 bg-pink-50">
+        <div className="text-4xl font-bold text-center">Breed Cat</div>
+        <div className="text-2xl font-medium text-center mt-4">
+          These two lovely Kitties will soon be parents!
+        </div>
+        <div className="flex justify-center gap-10 mt-8">
+          <div className="flex flex-col gap-2 cursor-pointer">
+            <div className="font-bold text-lg text-center">DAD</div>
+            <div className="font-medium text-gray-500 text-lg text-center">
+              Choose a Dad cat
+            </div>
+            {!dad ? (
+              <div
+                onClick={() => setType("dad")}
+                className="w-[400px] h-[500px] bg-orange-100 border-2 border-dashed rounded-2xl border-gray-300 hover:bg-orange-200 hover:border-orange-400"
+              ></div>
+            ) : (
+              <div onClick={() => setType("dad")} className="cursor-pointer">
+                <MediumCatContainer>
+                  <CatBox model={dad} />
+                </MediumCatContainer>
+              </div>
+            )}
+          </div>
+          <div className="self-center relative w-[60px]">
+            <Heart
+              size="60"
+              color="#f47373"
+              variant="Bold"
+              className="absolute animate-ping"
+            />
+            <Heart
+              size="60"
+              color="#f47373"
+              variant="Bold"
+              style={{ animationDelay: "0.3s" }}
+              className="absolute animate-ping"
+            />
+          </div>
+          <div className="flex flex-col gap-2 cursor-pointer">
+            <div className="font-bold text-lg text-center">MUM</div>
+            <div className="font-medium text-gray-500 text-lg text-center">
+              Choose a Mum cat
+            </div>
+            {!mum ? (
+              <div
+                onClick={() => setType("mum")}
+                className="w-[400px] h-[500px] bg-pink-100 border-2 border-dashed rounded-2xl border-gray-300 hover:bg-pink-200 hover:border-pink-400"
+              ></div>
+            ) : (
+              <div onClick={() => setType("mum")} className="cursor-pointer">
+                <MediumCatContainer>
+                  <CatBox model={mum} />
+                </MediumCatContainer>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-4 justify-center mt-10 h-[300px] mb-20">
+          {sireCostTxt && (
+            <div className="text-center text-red-500 font-bold">
+              {sireCostTxt}
+            </div>
+          )}
+          <button
+            disabled={loading || !dadKitty || !mumKitty}
+            onClick={onBreedClicked}
+            style={{
+              cursor: loading || !dadKitty || !mumKitty ? "default" : "pointer",
+              background:
+                loading || !dadKitty || !mumKitty ? "#yellow" : "#FBA1B7",
+            }}
+            className="w-[600px] uppercase text-xl rounded-2xl py-8 text-white font-bold border-[#FFD1DA] bg-[#FBA1B7] border-4 hover:border-b-8 transition-all"
+          >
+            {!loading ? "Click to breeding" : "Loading..."}
+          </button>
+          <button
+            onClick={onResetParents}
+            className="w-[600px] uppercase text-xl rounded-2xl py-8 bg-white font-bold border-[#FFD1DA] text-[#FBA1B7] border-4 hover:border-b-8 transition-all"
+          >
+            Reset breeding
+          </button>
+        </div>
+      </div>
+      {["mum", "dad"].includes(type) && (
+        <BreedModal
+          open
+          type={type}
+          onClose={() => setType("")}
+          onOk={() => setType("")}
+        />
+      )}
+      {progress === BreedProgress.BIRTH && (
+        <Modal
+          open={open}
+          width={800}
+          title="Breeding Result"
+          onCancel={() => {
+            setOpen(false);
+            onResetParents();
+          }}
+          footer={null}
+        >
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-success text-center">
+              Cogratulations! Your parent kitties now need a rest.
+            </p>
+            <div className="d-flex flex-column align-items-center mt-4 text-success">
+              <h5>A new kitten is born!</h5>
+              <CatBox model={kitten} />
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

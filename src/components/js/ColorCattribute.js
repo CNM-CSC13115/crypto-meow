@@ -1,15 +1,14 @@
-import Cattribute from './Cattribute';
-import { colorObj } from './colors';
-
+import Cattribute from "./Cattribute";
+import { colorObj } from "./colors";
 
 export default class ColorCattribute extends Cattribute {
   static NAMES = {
-    bodyColor: 'bodyColor',
-    accentColor: 'accentColor',
-    eyeColor: 'eyeColor',
-    earColor: 'earColor',
-    decorationMidcolor: 'decorationMidcolor',
-    decorationSidescolor: 'decorationSidescolor',
+    bodyColor: "bodyColor",
+    accentColor: "accentColor",
+    eyeColor: "eyeColor",
+    earColor: "earColor",
+    decorationMidcolor: "decorationMidcolor",
+    decorationSidescolor: "decorationSidescolor",
   };
 
   constructor(props) {
@@ -24,10 +23,10 @@ export default class ColorCattribute extends Cattribute {
 
   // returns the hex color value
   getCssColor() {
-    return colorObj[this.value].color;
+    return colorObj[this.value]?.color;
   }
 
   get valueName() {
-    return colorObj[this.value].name;
+    return colorObj[this.value]?.name;
   }
 }

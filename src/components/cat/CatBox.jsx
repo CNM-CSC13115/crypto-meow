@@ -1,32 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Col } from 'react-bootstrap';
-import styled from 'styled-components';
+import React from "react";
+import PropTypes from "prop-types";
+import { Col } from "react-bootstrap";
+import styled from "styled-components";
 
-import Cat from './Cat';
-import CatFeatures from './CatFeatures';
-import { CatModel } from '../js/catFactory';
+import Cat from "./Cat";
+import CatFeatures from "./CatFeatures";
+import { CatModel } from "../js/catFactory";
 
-
-const Box = styled(Col)`
-    background-color: #e2efff;
-    border-radius: 10px;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    min-width: 20rem;
-    max-width: 20rem;
-`;
-
-export default function CatBox({ model, }) {
+export default function CatBox({ model }) {
   if (!model) {
-    return <div />;
+    return <></>;
   }
 
   return (
-    <Box className="m-2 light-b-shadow">
-      <Cat model={model} />
+    <div className="m-2 shadow bg-[#febbcc] rounded-2xl p-[20px] transition-all hover:scale-105 flex flex-col items-center">
+      <div className="mx-auto">
+        <Cat model={model} />
+      </div>
       <CatFeatures model={model} />
-    </Box>
+    </div>
   );
 }
 

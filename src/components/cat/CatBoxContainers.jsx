@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const SmallCatContainer = styled.div`
   transform: scale(0.5);

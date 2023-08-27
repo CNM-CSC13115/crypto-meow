@@ -1,26 +1,28 @@
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Tabs, Tab, Button, Col, Row, Badge
-} from 'react-bootstrap';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Tabs, Tab, Button, Col, Row, Badge } from "react-bootstrap";
 
-import { CatModel } from '../js/catFactory';
-import Cattribute from '../js/Cattribute';
-import CatSettings from './CatSettings';
-import CatBox from '../cat/CatBox';
-import BirthAlert from './BirthAlert';
-import { createGen0Kitty, selectKittyById, newKittenIdClear } from '../cat/catSlice';
-import GenZeroCounter from '../cat/GenZeroCounter';
+import { CatModel } from "../js/catFactory";
+import Cattribute from "../js/Cattribute";
+import CatSettings from "./CatSettings";
+import CatBox from "../cat/CatBox";
+import BirthAlert from "./BirthAlert";
+import {
+  createGen0Kitty,
+  selectKittyById,
+  newKittenIdClear,
+} from "../cat/catSlice";
+import GenZeroCounter from "../cat/GenZeroCounter";
 
 const initialCatModel = new CatModel();
-
 
 export default function CatFactory() {
   const dispatch = useDispatch();
 
-  const [cat, setCat] = useState({ model: initialCatModel, });
-  const kitten = useSelector((state) => selectKittyById(state, state.kitties.newKittenId));
-
+  const [cat, setCat] = useState({ model: initialCatModel });
+  const kitten = useSelector((state) =>
+    selectKittyById(state, state.kitties.newKittenId)
+  );
 
   const handleDnaChange = (event) => {
     // set new dna value
@@ -29,18 +31,18 @@ export default function CatFactory() {
 
     setCat((oldState) => {
       const newModel = oldState.model.mewtate(cattributeName, value);
-      return { model: newModel, };
+      return { model: newModel };
     });
   };
 
   const handleSetDefaultKitty = () => {
     const defaultCat = new CatModel();
-    setCat({ model: defaultCat, });
+    setCat({ model: defaultCat });
   };
 
   const handleSetRandomKitty = () => {
     const randomCat = CatModel.getRandom();
-    setCat({ model: randomCat, });
+    setCat({ model: randomCat });
   };
 
   const handleCreateKitty = () => {
@@ -52,24 +54,22 @@ export default function CatFactory() {
   };
 
   return (
-    <>
+    <div className="p-5 bg-pink-100">
       <div className="p-2">
-        <h1>
-          Kitty Factory
-          {' '}
+        <h1 className="font-bold text-2xl flex items-center text-pink-500 gap-2">
+          Kitty Factory{" "}
           <small>
-            <Badge pill variant="secondary">
+            <Badge pill variant="danger">
               <GenZeroCounter />
             </Badge>
           </small>
         </h1>
         <p className="text-justify">
-          Create a custom generation zero Kitty!
-          {' '}
+          Create a custom generation zero Kitty!{" "}
           <small>
-            Gen zero kitties are special.
-            They have no parents and only a limited number will ever exist!
-            Once the limit is reached no more gen zero kitties can be made.
+            Gen zero kitties are special. They have no parents and only a
+            limited number will ever exist! Once the limit is reached no more
+            gen zero kitties can be made.
           </small>
         </p>
       </div>
@@ -97,21 +97,21 @@ export default function CatFactory() {
           <div>
             <Button
               variant="warning"
-              className="m-2"
+              className="m-2 bg-yellow-500"
               onClick={handleSetDefaultKitty}
             >
               Default Kitty
             </Button>
             <Button
               variant="warning"
-              className="m-2"
+              className="m-2 bg-yellow-500"
               onClick={handleSetRandomKitty}
             >
               Random Kitty
             </Button>
             <Button
               variant="warning"
-              className="m-2"
+              className="m-2 bg-yellow-500"
               onClick={handleCreateKitty}
             >
               Create Kitty
@@ -124,6 +124,6 @@ export default function CatFactory() {
           />
         </Col>
       </Row>
-    </>
+    </div>
   );
 }
