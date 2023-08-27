@@ -90,7 +90,9 @@ export default function App() {
       <TransactionStatusToast />
       <Router>
         <AppHeader />
-        <div className="min-h-[calc(100vh-200px)]">{routes}</div>
+        <div className="min-h-[calc(100vh-200px)] flex flex-col [&>div]:flex-1">
+          {routes}
+        </div>
         {unsupportedNetwork}
       </Router>
       <AppFooter />

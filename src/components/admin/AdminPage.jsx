@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { addKittyCreator, removeKittyCreator, selectAllKittyCreators } from './kittyCreatorSlice';
+import React, { useState } from "react";
+import { Form } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+import {
+  addKittyCreator,
+  removeKittyCreator,
+  selectAllKittyCreators,
+} from "./kittyCreatorSlice";
+import { Button } from "antd";
 
 const Address = styled.div`
   padding: 0.25rem;
@@ -11,7 +16,7 @@ const Address = styled.div`
 export default function AdminPage() {
   const dispatch = useDispatch();
   const kittyCreators = useSelector(selectAllKittyCreators);
-  const [newCreator, setNewCreator] = useState('');
+  const [newCreator, setNewCreator] = useState("");
 
   const onRemoveCreatorClicked = (address) => {
     dispatch(removeKittyCreator(address));
@@ -20,14 +25,14 @@ export default function AdminPage() {
   const kittyCreatorItems = kittyCreators.map((c) => (
     <Address key={c}>
       {c}
-      <Button
+      <Butto
         variant="danger"
         size="sm"
         className="ml-auto"
         onClick={() => onRemoveCreatorClicked(c)}
       >
         X
-      </Button>
+      </Butto>
     </Address>
   ));
 
@@ -39,21 +44,17 @@ export default function AdminPage() {
   };
 
   return (
-    <div>
+    <div className="bg-pink-100 p-5">
       <h1>Kitty Admin</h1>
       <h3>Kitty Creators</h3>
-      <div>
-        {kittyCreatorItems}
-      </div>
+      <div>{kittyCreatorItems}</div>
       <Form inline onSubmit={onAddCreatorClicked}>
         <Form.Group>
           <Form.Control
             placeholder="Kitty Creator address"
             onChange={onCreatorChanged}
           />
-          <Button type="submit">
-            Add
-          </Button>
+          <Button type="submit">Add</Button>
         </Form.Group>
       </Form>
     </div>

@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import { Shop } from "iconsax-react";
+import { Barcode, Shop, UserOctagon } from "iconsax-react";
 import React from "react";
 import { Nav } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -22,7 +22,7 @@ export default function AppHeader() {
             className="flex items-center outline-none"
             type="text"
             icon={
-              <img alt="breed" src="/images/cat.png" width={20} height={20} />
+              <img alt="breed" src="/images/cat.png" width={24} height={24} />
             }
             size="large"
           >
@@ -34,7 +34,7 @@ export default function AppHeader() {
             className="flex items-center outline-none"
             type="text"
             icon={
-              <img alt="breed" src="/images/breed.svg" width={20} height={20} />
+              <img alt="breed" src="/images/breed.svg" width={24} height={24} />
             }
             size="large"
           >
@@ -46,7 +46,7 @@ export default function AppHeader() {
           <Button
             className="flex items-center outline-none"
             type="text"
-            icon={<Shop size="20" color="#F47373" variant="Bold" />}
+            icon={<Shop size="24" color="#F47373" variant="Bold" />}
             size="large"
           >
             Marketplace
@@ -57,14 +57,28 @@ export default function AppHeader() {
 
   // only Kitty Creators can create gen zero kitties
   const factory = isKittyCreator ? (
-    <NavLink to="/factory" className="btn nav-link">
-      Factory
+    <NavLink to="/factory" className="no-underline">
+      <Button
+        className="flex items-center outline-none"
+        type="text"
+        icon={<Barcode size="24" color="#f47373" variant="Bold" />}
+        size="large"
+      >
+        Factory
+      </Button>
     </NavLink>
   ) : null;
 
   const admin = isOwner ? (
-    <NavLink to="/admin" className="btn nav-link">
-      Admin
+    <NavLink to="/admin" className="no-underline">
+      <Button
+        className="flex items-center outline-none"
+        type="text"
+        icon={<UserOctagon size="24" color="#f47373" variant="Bold" />}
+        size="large"
+      >
+        Admin
+      </Button>
     </NavLink>
   ) : null;
 

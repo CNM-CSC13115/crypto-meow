@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, Row } from 'react-bootstrap';
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import CatAction from './CatAction';
-import { offerTypes } from '../js/kittyConstants';
-import { selectOfferByKittyId, sellKitty, sireKitty } from '../market/offerSlice';
-import { buyOffer, cancelOffer } from '../market/offerSaga';
-import { selectIsApproved } from '../wallet/walletSlice';
-import ApproveMarket from '../market/ApproveMarket';
+import { Modal } from "antd";
+import { offerTypes } from "../js/kittyConstants";
+import ApproveMarket from "../market/ApproveMarket";
+import { buyOffer, cancelOffer } from "../market/offerSaga";
+import {
+  selectOfferByKittyId,
+  sellKitty,
+  sireKitty,
+} from "../market/offerSlice";
+import { selectIsApproved } from "../wallet/walletSlice";
+import CatAction from "./CatAction";
+import { Button } from "antd";
 
-
-export default function CatActions({ kittyId, isBuyMode, }) {
+export default function CatActions({ kittyId, isBuyMode }) {
   const dispatch = useDispatch();
 
   const [offerType, setOfferType] = useState(undefined);
@@ -19,7 +23,8 @@ export default function CatActions({ kittyId, isBuyMode, }) {
   useEffect(() => {
     if (offer) {
       const theOfferType = offer.isSireOffer
-        ? offerTypes.sire : offerTypes.sell;
+        ? offerTypes.sire
+        : offerTypes.sell;
       setOfferType(theOfferType);
     }
   }, [offer]);
@@ -44,15 +49,16 @@ export default function CatActions({ kittyId, isBuyMode, }) {
 
   const createSaleOffer = async (price) => {
     if (approved) {
-      dispatch(sellKitty({ kittyId, price, }));
+      dispatch(sellKitty({ kittyId, price }));
     } else {
       setAskForApproval(true);
     }
   };
 
-  const createSireOffer = async (price) => dispatch(sireKitty({ kittyId, price, }));
-  const handleCancelOffer = async () => dispatch(cancelOffer({ kittyId, }));
-  const handleBuyKittyClicked = async () => dispatch(buyOffer({ offer, }));
+  const createSireOffer = async (price) =>
+    dispatch(sireKitty({ kittyId, price }));
+  const handleCancelOffer = async () => dispatch(cancelOffer({ kittyId }));
+  const handleBuyKittyClicked = async () => dispatch(buyOffer({ offer }));
   const handleBackClicked = () => setOfferType(undefined);
 
   // sire offers handled in the breed page
@@ -60,62 +66,75 @@ export default function CatActions({ kittyId, isBuyMode, }) {
   const handleBuySireOfferClicked = async () => Promise.resolve(true);
 
   let action;
-  if (askForApproval) {
-    action = (
-      <ApproveMarket handleApproveCancel={handleApproveCancel} />
-    );
-  } else {
-    switch (offerType) {
-      case offerTypes.sell:
-        action = (
-          <CatAction
-            offer={offer}
-            btnText="Sell"
-            btnTextPlural="Selling"
-            isBuyMode={isBuyMode}
-            kittyId={kittyId}
-            handleBackClicked={handleBackClicked}
-            handleCreateOfferClicked={createSaleOffer}
-            handleBuyOfferClicked={handleBuyKittyClicked}
-            handleCancelOffer={handleCancelOffer}
-          />
-        );
-        break;
 
-      case offerTypes.sire:
-        action = (
-          <CatAction
-            offer={offer}
-            btnText="Sire"
-            btnTextPlural="Siring"
-            isBuyMode={isBuyMode}
-            kittyId={kittyId}
-            handleBackClicked={handleBackClicked}
-            handleCreateOfferClicked={createSireOffer}
-            handleBuyOfferClicked={handleBuySireOfferClicked}
-            handleCancelOffer={handleCancelOffer}
-          />
-        );
-        break;
+  switch (offerType) {
+    case offerTypes.sell:
+      action = (
+        <CatAction
+          offer={offer}
+          btnText="Sell"
+          btnTextPlural="Selling"
+          isBuyMode={isBuyMode}
+          kittyId={kittyId}
+          handleBackClicked={handleBackClicked}
+          handleCreateOfferClicked={createSaleOffer}
+          handleBuyOfferClicked={handleBuyKittyClicked}
+          handleCancelOffer={handleCancelOffer}
+        />
+      );
+      break;
 
-      default:
-        action = Object.keys(offerTypes).map((keyName) => (
+    case offerTypes.sire:
+      action = (
+        <CatAction
+          offer={offer}
+          btnText="Sire"
+          btnTextPlural="Siring"
+          isBuyMode={isBuyMode}
+          kittyId={kittyId}
+          handleBackClicked={handleBackClicked}
+          handleCreateOfferClicked={createSireOffer}
+          handleBuyOfferClicked={handleBuySireOfferClicked}
+          handleCancelOffer={handleCancelOffer}
+        />
+      );
+      break;
+
+    default:
+      break;
+  }
+
+  return (
+    <div>
+      {action}
+      <div className="flex gap-2">
+        {Object.keys(offerTypes).map((keyName) => (
           <Button
             key={keyName}
-            className="mr-2"
+            className="flex-1 bg-[#fd9bb3] hover:bg-red-400 text-white font-medium hover:border-none"
+            size="large"
             onClick={() => onActionClicked(offerTypes[keyName])}
           >
             {offerTypes[keyName]}
           </Button>
-        ));
-        break;
-    }
-  }
-
-  return (
-    <Row className="pl-4">
-      {action}
-    </Row>
+        ))}
+      </div>
+      {askForApproval ? (
+        <Modal open footer={null}>
+          <ApproveMarket handleApproveCancel={handleApproveCancel} />
+        </Modal>
+      ) : (
+        offerType && (
+          <Modal
+            open
+            title={offerType === offerTypes.sell ? "Sell" : "Sire"}
+            footer={null}
+          >
+            {action}
+          </Modal>
+        )
+      )}
+    </div>
   );
 }
 

@@ -1,18 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Alert } from 'react-bootstrap';
+import React from "react";
+import PropTypes from "prop-types";
+import { Alert } from "react-bootstrap";
 
 export default function BirthAlert(props) {
-  const {
-    show,
-    handleBirthEventClose,
-    event,
-  } = props;
-  const { kittyId, genes, } = event || {};
+  const { show, handleBirthEventClose, event } = props;
+  const { kittyId, genes } = event || {};
 
   return (
     <Alert
-      className="w-100 ml-4"
+      className="w-100 ml-2 bg-pink-200 border-pink-300 text-pink-500"
       variant="success"
       dismissible
       show={show}
@@ -21,9 +17,7 @@ export default function BirthAlert(props) {
       <strong>A new kitty was born! </strong>
       <span>
         KittyId:
-        {kittyId}
-        {' '}
-        DNA:
+        {kittyId} DNA:
         {genes}
       </span>
     </Alert>

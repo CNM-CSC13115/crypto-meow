@@ -1,13 +1,12 @@
 import React from "react";
-import styled from "styled-components";
-import { Alert, Col, Row } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
+import { Button } from "antd";
 import Cat from "./components/cat/Cat";
+import GenZeroCounter from "./components/cat/GenZeroCounter";
 import { CatModel } from "./components/js/catFactory";
 import { connect } from "./components/wallet/walletSaga";
-import GenZeroCounter from "./components/cat/GenZeroCounter";
-import { Button } from "antd";
 
 export default function Home() {
   const dispatch = useDispatch();

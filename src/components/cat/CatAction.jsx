@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import {
-  Button, Alert, InputGroup, Form
-} from 'react-bootstrap';
-import styled from 'styled-components';
-import { NavLink } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { Alert, InputGroup, Form } from "react-bootstrap";
+import styled from "styled-components";
+import { NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import Service from '../js/service';
-import { selectOfferByKittyId } from '../market/offerSlice';
-import { sireOfferSelected } from '../breed/breedSlice';
+import Service from "../js/service";
+import { selectOfferByKittyId } from "../market/offerSlice";
+import { sireOfferSelected } from "../breed/breedSlice";
+import { Button } from "antd";
 
 const SELL_STATUS = {
-  notForSale: 'Not For Sale',
-  approvalRequired: 'Approval Required',
-  setPrice: 'Set Price',
-  sendingOffer: 'Sending Offer',
-  offerCreated: 'Offer Created',
-  cancellingOffer: 'Cancelling Offer',
-  offerCancelled: 'Offer Cancelled',
-  sendingBuyOffer: 'Sending Buy Offer',
-  sold: 'Sold',
+  notForSale: "Not For Sale",
+  approvalRequired: "Approval Required",
+  setPrice: "Set Price",
+  sendingOffer: "Sending Offer",
+  offerCreated: "Offer Created",
+  cancellingOffer: "Cancelling Offer",
+  offerCancelled: "Offer Cancelled",
+  sendingBuyOffer: "Sending Buy Offer",
+  sold: "Sold",
 };
 
 const KittyAlert = styled(Alert)`
@@ -28,10 +27,9 @@ const KittyAlert = styled(Alert)`
 `;
 
 const emptyMessage = {
-  text: '',
-  type: 'info',
+  text: "",
+  type: "info",
 };
-
 
 export default function CatAction(props) {
   const {
@@ -73,15 +71,18 @@ export default function CatAction(props) {
     dispatch(sireOfferSelected(offer.tokenId));
   };
 
-
   let sellDisplay = null;
   switch (sellStatus) {
     case SELL_STATUS.setPrice: {
       sellDisplay = (
-        <Form inline onSubmit={onCreateOfferClicked}>
+        <Form
+          inline
+          onSubmit={onCreateOfferClicked}
+          className="flex items-center"
+        >
           <InputGroup>
             <Form.Control
-              style={{ width: '5rem', }}
+              style={{ width: "100%" }}
               name="price"
               type="number"
               min={0}
@@ -90,16 +91,13 @@ export default function CatAction(props) {
               placeholer="Set Price"
             />
           </InputGroup>
-          <InputGroup.Append>
+          <InputGroup.Append className="flex items-center gap-2">
             <InputGroup.Text>ETH</InputGroup.Text>
-            <Button type="submit">
+            <Button htmlType="submit" type="primary" danger>
               {btnText}
               Kitty
             </Button>
-            <Button
-              variant="secondary"
-              onClick={handleBackClicked}
-            >
+            <Button variant="secondary" onClick={handleBackClicked}>
               Back
             </Button>
           </InputGroup.Append>
@@ -111,37 +109,29 @@ export default function CatAction(props) {
       if (!offer) {
         break;
       }
-      const priceInEth = Service.web3.utils.fromWei(offer.price, 'ether');
+      const priceInEth = Service.web3.utils.fromWei(offer.price, "ether");
       let sellButton;
       if (user !== offer.seller) {
-        sellButton = offer.isSireOffer
-          ? (
-            <NavLink
-              to="/breed"
-              onClick={onSireOfferClicked}
-              className="btn btn-primary nav-link"
-            >
-              Buy
-            </NavLink>
-          )
-          : (
-            <Button
-              key="buy"
-              variant="primary"
-              className="ml-2"
-              onClick={handleBuyOfferClicked}
-            >
+        sellButton = offer.isSireOffer ? (
+          <NavLink to="/breed" onClick={onSireOfferClicked}>
+            <Button danger type="primary">
               Buy
             </Button>
-          );
+          </NavLink>
+        ) : (
+          <Button
+            key="buy"
+            danger
+            type="primary"
+            className="ml-2"
+            onClick={handleBuyOfferClicked}
+          >
+            Buy
+          </Button>
+        );
       } else {
         sellButton = (
-          <Button
-            key="cancel"
-            variant="primary"
-            className="ml-2"
-            onClick={handleCancelOffer}
-          >
+          <Button key="cancel" className="ml-2" onClick={handleCancelOffer}>
             Cancel
           </Button>
         );
@@ -149,13 +139,7 @@ export default function CatAction(props) {
       sellDisplay = (
         <div className="d-flex align-items-center">
           <span className="mr-2">
-            {btnTextPlural}
-            {' '}
-            For:
-            {' '}
-            {priceInEth.toString(10)}
-            {' '}
-            ETH
+            {btnTextPlural} For: {priceInEth.toString(10)} ETH
           </span>
           {sellButton}
         </div>
@@ -170,10 +154,7 @@ export default function CatAction(props) {
   return (
     <div className="mr-2">
       {sellDisplay}
-      <KittyAlert
-        variant={message.type}
-        show={message.text.length > 0}
-      >
+      <KittyAlert variant={message.type} show={message.text.length > 0}>
         {message.text}
       </KittyAlert>
     </div>
