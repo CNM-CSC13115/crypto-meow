@@ -25,14 +25,14 @@ export default function AdminPage() {
   const kittyCreatorItems = kittyCreators.map((c) => (
     <Address key={c}>
       {c}
-      <Butto
+      <Button
         variant="danger"
         size="sm"
         className="ml-auto"
         onClick={() => onRemoveCreatorClicked(c)}
       >
         X
-      </Butto>
+      </Button>
     </Address>
   ));
 
