@@ -98,7 +98,7 @@ function* onAccountOrNetworkChange() {
 
   // get updated user state
   return yield all({
-    isOwner: call(true),
+    // isOwner: call(Service.kitty.isUserOwner),
     isApproved: call(Service.market.isApproved),
     isKittyCreator: call(Service.kitty.isUserKittyCreator),
     gen0Count: put(getGen0KittyCount()),

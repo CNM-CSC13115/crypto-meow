@@ -23,11 +23,9 @@ export default function AppHeader() {
         <NavLink to="/kitties" className="no-underline">
           <Button
             style={{
-              background:
-                location.pathname === "/" ||
-                location.pathname.startsWith("/kitties")
-                  ? "#FBA1B7"
-                  : "transparent",
+              background: location.pathname.startsWith("/kitties")
+                ? "#FBA1B7"
+                : "",
             }}
             className="flex items-center outline-none"
             type="text"
@@ -44,7 +42,7 @@ export default function AppHeader() {
             style={{
               background: location.pathname.startsWith("/breed")
                 ? "#FBA1B7"
-                : "transparent",
+                : "",
             }}
             className="flex items-center outline-none"
             type="text"
@@ -62,7 +60,7 @@ export default function AppHeader() {
             style={{
               background: location.pathname.startsWith("/market")
                 ? "#FBA1B7"
-                : "transparent",
+                : "",
             }}
             className="flex items-center outline-none"
             type="text"
@@ -80,9 +78,7 @@ export default function AppHeader() {
     <NavLink to="/factory" className="no-underline">
       <Button
         style={{
-          background: location.pathname.startsWith("/factory")
-            ? "#FBA1B7"
-            : "transparent",
+          background: location.pathname.startsWith("/factory") ? "#FBA1B7" : "",
         }}
         className="flex items-center outline-none"
         type="text"
@@ -98,9 +94,7 @@ export default function AppHeader() {
     <NavLink to="/admin" className="no-underline">
       <Button
         style={{
-          background: location.pathname.startsWith("/admin")
-            ? "#FBA1B7"
-            : "transparent",
+          background: location.pathname.startsWith("/admin") ? "#FBA1B7" : "",
         }}
         className="flex items-center outline-none"
         type="text"
